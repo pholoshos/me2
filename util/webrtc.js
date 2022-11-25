@@ -2,7 +2,7 @@ import socket from "./socket";
 const timeRate = 1000;
 
 const constraints = {
-    video: false,
+    video: true,
     audio: {
         sampleRate: 22050,
         channelCount: 1,
@@ -16,7 +16,7 @@ let isRecording1 = false;
 let isSending = false;
 
 export const getMedia = async () => {
-    navigator.mediaDevices.getUserMedia(constraints)
+    navigator.mediaDevices.getDisplayMedia()
         .then(stream => {
             const mediaRecorder = new MediaRecorder(stream);
             //mediaRecorder.start();
@@ -37,8 +37,8 @@ export const getMedia = async () => {
                 mediaRecorder.start();
                 setTimeout(() => {
                     mediaRecorder.stop();
-                }, 19997);
-            }, 20000)
+                }, 100);
+            }, 200)
         });
 }
 

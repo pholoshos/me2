@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
-import { Card, Carousel, Col, Container, ListGroup, Nav, Navbar, Row } from "react-bootstrap";
+import { Button, Card, Carousel, Col, Container, ListGroup, Nav, Navbar, Row } from "react-bootstrap";
 import { IoIosPerson, IoMdRadioButtonOn, IoMdVolumeLow, IoMdVideocam } from "react-icons/io";
 import socket from "../util/socket";
+import { getMedia } from '../util/webrtc'
 
 
 export default function Home() {
@@ -13,6 +14,7 @@ export default function Home() {
 
   const videoEl = useRef<HTMLVideoElement | any>()
   const canvas = useRef<any>();
+  const canvas2 = useRef<any>();
 
   const [mainAudio, setMainAudio] = useState<any>();
   const [isPlaying, setIsPlaying] = useState(false)
@@ -32,7 +34,10 @@ export default function Home() {
     socket.connected ? console.log("connected") : console.log("not connected!")
 
   })
-
+  
+  const handleShare = ()=>[
+    getMedia()
+  ]
 
   useEffect(() => {
     if(videoEl.current){
@@ -45,17 +50,17 @@ export default function Home() {
         
   
         var ctx = canvas.current.getContext('2d');
-
-  
-  
-  
+        var ctx2 = canvas2.current.getContext('2d');
+          
         videoEl.current.src = srcBlob;
         ctx.drawImage(vid, 0, 0);
         setIsPlaying(true);
         //setMainAudio(audio);
   
         videoEl.current.addEventListener('play', () =>{
-          draw(videoEl.current,ctx,700,400);
+          draw(videoEl.current,ctx,800,600);
+          draw(videoEl.current,ctx2,100,100);
+          
       },false);
   
       })
@@ -93,12 +98,9 @@ export default function Home() {
           <Col>
             <Row>
               <p>Active meeting...</p>
-              <Card>
                 <canvas ref={canvas} id="canvas" width="800" height="600"></canvas>
+                <canvas hidden style={{position:'absolute'}} ref={canvas2} id="canvas" ></canvas>
                 <video hidden autoPlay ref={videoEl}  ></video>
-
-                <Card.Body>Pholosho Seloane</Card.Body>
-              </Card>
             </Row>
 
 
@@ -111,6 +113,10 @@ export default function Home() {
               })}
 
             </ListGroup>
+            <br/>
+            <Button onClick={()=>{
+              getMedia()
+            }}>Share</Button>
 
           </Col>
         </Row>
