@@ -25,7 +25,7 @@ export default function Home() {
   }
 
   useEffect(() => {
-    document.body.style.backgroundColor = "white"
+    document.body.style.backgroundColor = "black"
     const username = "pholosho";
     socket.auth = { username };
     socket.connect()
@@ -35,26 +35,45 @@ export default function Home() {
 
 
   useEffect(() => {
-    socket.on("recieveAudio", (args: any) => {
-      const blob = new Blob([args.audio])
-      const srcBlob = URL.createObjectURL(blob);
-      //const video = new Audio(srcBlob);
-      videoEl.current.src = srcBlob;
+    if(videoEl.current){
+      socket.on("recieveAudio", (args: any) => {
+        const blob = new Blob([args.audio])
+        const srcBlob = URL.createObjectURL(blob);
+        const vid = document.createElement("video");
+        vid.hidden = true;
+        vid.src = srcBlob;
+        
+  
+        var ctx = canvas.current.getContext('2d');
 
-      setIsPlaying(true);
-      //setMainAudio(audio);
+  
+  
+  
+        videoEl.current.src = srcBlob;
+        ctx.drawImage(vid, 0, 0);
+        setIsPlaying(true);
+        //setMainAudio(audio);
+  
+        videoEl.current.addEventListener('play', () =>{
+          draw(videoEl.current,ctx,700,400);
+      },false);
+  
+      })
+    }
 
-   
 
-    })
-
-  }, [])
+  }, [videoEl])
+  
 
   useEffect(() => {
     mainAudio?.play();
   }, [mainAudio])
 
-
+  function draw(v, c, w, h) {
+    if (v.paused || v.ended) return false;
+    c.drawImage(v, 0, 0, w, h);
+    setTimeout(draw, 20, v, c, w, h);
+  }
 
   return (
     <div style={{ background: '', height: '100vh' }}>
@@ -75,8 +94,8 @@ export default function Home() {
             <Row>
               <p>Active meeting...</p>
               <Card>
-              
-                <video  autoPlay ref={videoEl}  ></video>
+                <canvas ref={canvas} id="canvas" width="800" height="600"></canvas>
+                <video hidden autoPlay ref={videoEl}  ></video>
 
                 <Card.Body>Pholosho Seloane</Card.Body>
               </Card>
